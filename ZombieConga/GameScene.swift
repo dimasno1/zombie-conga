@@ -16,20 +16,22 @@ final class GameScene: SKScene {
         let background = SKSpriteNode.background
         background.anchorPoint = .zero
     
-        place(node: background, at: .zero)
-        place(node: zombie, at: CGPoint(x: 400, y: 400))
+        background.place(in: self, at: .zero)
+        zombie.place(in: self, at: CGPoint(x: 400, y: 400))
     }
     
     override func update(_ currentTime: TimeInterval) {
         zombie.position.translateBy(x: 2)
     }
     
-    private func place(node: SKNode, at position: CGPoint) {
-        node.position = position
-        addChild(node)
-    }
-    
     private let zombie = Character.zombie(index: 1).node
+}
+
+extension SKNode {
+    func place(in node: SKNode, at position: CGPoint) {
+        self.position = position
+        node.addChild(self)
+    }
 }
 
 extension SKSpriteNode {
