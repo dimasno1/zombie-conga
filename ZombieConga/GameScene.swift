@@ -21,30 +21,35 @@ final class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        zombie.position.translateBy(x: 2)
+        intervalCounter.update(with: currentTime)
+        move(sprite: zombie, velocity: .init(x: zombieMovePointsPerSec, y: 0))
     }
     
+    func move(sprite: SKSpriteNode, velocity: CGPoint) {
+        let amountToMove = CGPoint(
+            x: velocity.x * intervalCounter.dtFraction,
+            y: velocity.y * intervalCounter.dtFraction
+        )
+        sprite.position.translateBy(point: amountToMove)
+    }
+
+    let zombieMovePointsPerSec: CGFloat = 480.0
+    var velocity = CGPoint.zero
+    
+    private let intervalCounter = UpdateIntervalCounter()
     private let zombie = Character.zombie(index: 1).node
 }
 
-extension SKNode {
-    func place(in node: SKNode, at position: CGPoint) {
-        self.position = position
-        node.addChild(self)
+final class UpdateIntervalCounter {
+    var dtFraction: CGFloat {
+        return CGFloat(dt)
     }
-}
-
-extension SKSpriteNode {
-    static var background: SKSpriteNode {
-        let back = SKSpriteNode(imageNamed: "background1")
-        back.zPosition = -1.0
-        return back
+    
+    func update(with currentTime: TimeInterval) {
+        dt = lastUpdateTime > 0 ? currentTime - lastUpdateTime : 0
+        lastUpdateTime = currentTime
     }
-}
-
-extension CGPoint {
-    mutating func translateBy(x: CGFloat = 0, y: CGFloat = 0) {
-        self.x += x
-        self.y += y
-    }
+    
+    private var dt: TimeInterval = 0
+    private var lastUpdateTime: TimeInterval = 0
 }
