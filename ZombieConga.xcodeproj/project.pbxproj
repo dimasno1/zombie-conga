@@ -15,6 +15,7 @@
 		523415B024A8CBD800F5203E /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523415AF24A8CBD800F5203E /* Character.swift */; };
 		847519E024DD48A0001CE119 /* SKNode+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */; };
 		847519E224DD48E0001CE119 /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */; };
+		847519E424DD4F31001CE119 /* UpdateIntervalCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		523415AF24A8CBD800F5203E /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKNode+Extensions.swift"; sourceTree = "<group>"; };
 		847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
+		847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateIntervalCounter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			children = (
 				520DDFC724936E2500C4E8D1 /* AppDelegate.swift */,
 				520DDFCD24936E2500C4E8D1 /* GameScene.swift */,
+				847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */,
 				520DDFCF24936E2500C4E8D1 /* GameViewController.swift */,
 				847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */,
 				847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */,
@@ -170,6 +173,7 @@
 				520DDFCE24936E2500C4E8D1 /* GameScene.swift in Sources */,
 				520DDFD024936E2500C4E8D1 /* GameViewController.swift in Sources */,
 				847519E024DD48A0001CE119 /* SKNode+Extensions.swift in Sources */,
+				847519E424DD4F31001CE119 /* UpdateIntervalCounter.swift in Sources */,
 				520DDFC824936E2500C4E8D1 /* AppDelegate.swift in Sources */,
 				847519E224DD48E0001CE119 /* CGPoint+Extensions.swift in Sources */,
 				523415B024A8CBD800F5203E /* Character.swift in Sources */,
