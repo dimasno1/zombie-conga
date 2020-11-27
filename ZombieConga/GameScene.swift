@@ -10,6 +10,9 @@ import SpriteKit
 import GameplayKit
 
 final class GameScene: SKScene {
+    let zombieMovePointsPerSec: CGFloat = 480.0
+    var velocity = CGPoint.zero
+    
     override func didMove(to view: SKView) {
         backgroundColor = .black
         
@@ -21,30 +24,18 @@ final class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        zombie.position.translateBy(x: 2)
+        intervalCounter.update(with: currentTime)
+        move(sprite: zombie, velocity: .init(x: zombieMovePointsPerSec, y: 0))
     }
     
+    func move(sprite: SKSpriteNode, velocity: CGPoint) {
+        let amountToMove = CGPoint(
+            x: velocity.x * intervalCounter.secSinceLastUpdate,
+            y: velocity.y * intervalCounter.secSinceLastUpdate
+        )
+        sprite.position.translateBy(point: amountToMove)
+    }
+
+    private let intervalCounter = UpdateIntervalCounter()
     private let zombie = Character.zombie(index: 1).node
-}
-
-extension SKNode {
-    func place(in node: SKNode, at position: CGPoint) {
-        self.position = position
-        node.addChild(self)
-    }
-}
-
-extension SKSpriteNode {
-    static var background: SKSpriteNode {
-        let back = SKSpriteNode(imageNamed: "background1")
-        back.zPosition = -1.0
-        return back
-    }
-}
-
-extension CGPoint {
-    mutating func translateBy(x: CGFloat = 0, y: CGFloat = 0) {
-        self.x += x
-        self.y += y
-    }
 }
