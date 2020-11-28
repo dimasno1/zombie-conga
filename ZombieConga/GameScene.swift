@@ -14,7 +14,7 @@ final class GameScene: SKScene {
     let zombieMovePointsPerSec: CGFloat = 480.0
     
     override init(size: CGSize) {
-        let playableHeight = size.width / UIScreen.main.aspectRation
+        let playableHeight = size.width / UIScreen.main.landscapeAspectRation
         let playableMargin = (size.height - playableHeight) / 2.0
         
         self.playableRect = CGRect(
@@ -47,6 +47,7 @@ final class GameScene: SKScene {
         intervalCounter.update(with: currentTime)
         move(sprite: zombie, velocity: velocity)
         keepInBounds(zombie: zombie)
+        rotateSprite(zombie, to: velocity)
     }
     
     func sceneTouched(at location: CGPoint) {
@@ -54,25 +55,15 @@ final class GameScene: SKScene {
     }
     
     func move(sprite: SKSpriteNode, velocity: CGPoint) {
-        let amountToMove = CGPoint(
-            x: velocity.x * intervalCounter.secSinceLastUpdate,
-            y: velocity.y * intervalCounter.secSinceLastUpdate
-        )
+        let amountToMove = velocity * intervalCounter.secSinceLastUpdate
         sprite.position.translateBy(point: amountToMove)
     }
     
     func moveZombieToward(vector: Vector) {
         let distance = vector - zombie.position
-        let lenght = distance.length
-        let direction = CGPoint(
-            x: distance.x / lenght,
-            y: distance.y / lenght
-        )
-        
-        velocity = CGPoint(
-            x: direction.x * zombieMovePointsPerSec,
-            y: direction.y * zombieMovePointsPerSec
-        )
+        let direction = distance.normalized
+            
+        velocity = direction * zombieMovePointsPerSec
     }
     
     @objc
@@ -104,6 +95,10 @@ final class GameScene: SKScene {
         }
     }
     
+    private func rotateSprite(_ sprite: SKNode, to vector: Vector) {
+        sprite.zRotation = vector.angle
+    }
+    
     private var velocity = CGPoint.zero
     private let intervalCounter = UpdateIntervalCounter()
     private let zombie = Character.zombie(index: 1).node
@@ -115,24 +110,8 @@ private extension CGFloat {
     }
 }
 
-typealias Vector = CGPoint
-
-extension Vector {
-    static func -(l: Vector, r: Vector) -> Vector {
-        return Vector(x: l.x - r.x, y: l.y - r.y)
-    }
-
-    var length: CGFloat {
-        return sqrt(x * x + y * y)
-    }
-    
-    func distance(to vector: Vector) -> CGFloat {
-        return (vector - self).length
-    }
-}
-
 private extension UIScreen {
-    var aspectRation: CGFloat {
+    var landscapeAspectRation: CGFloat {
         return bounds.width / bounds.height
     }
 }

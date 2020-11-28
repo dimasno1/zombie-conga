@@ -13,6 +13,7 @@
 		520DDFD524936E2700C4E8D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 520DDFD424936E2700C4E8D1 /* Assets.xcassets */; };
 		520DDFD824936E2700C4E8D1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 520DDFD624936E2700C4E8D1 /* LaunchScreen.storyboard */; };
 		523415B024A8CBD800F5203E /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523415AF24A8CBD800F5203E /* Character.swift */; };
+		5241072A2571CB38008A6718 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524107292571CB38008A6718 /* Geometry.swift */; };
 		847519E024DD48A0001CE119 /* SKNode+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */; };
 		847519E224DD48E0001CE119 /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */; };
 		847519E424DD4F31001CE119 /* UpdateIntervalCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */; };
@@ -27,6 +28,7 @@
 		520DDFD724936E2700C4E8D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		520DDFD924936E2700C4E8D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		523415AF24A8CBD800F5203E /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
+		524107292571CB38008A6718 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKNode+Extensions.swift"; sourceTree = "<group>"; };
 		847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 		847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateIntervalCounter.swift; sourceTree = "<group>"; };
@@ -83,8 +85,7 @@
 				520DDFCD24936E2500C4E8D1 /* GameScene.swift */,
 				847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */,
 				520DDFCF24936E2500C4E8D1 /* GameViewController.swift */,
-				847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */,
-				847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */,
+				5241072C2571CB48008A6718 /* Extensions */,
 				523415B124A8CBF000F5203E /* Models */,
 				5206267124A8938900A358C0 /* Resources */,
 				5206267024A8937800A358C0 /* SupportingFiles */,
@@ -98,6 +99,16 @@
 				523415AF24A8CBD800F5203E /* Character.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		5241072C2571CB48008A6718 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				847519DF24DD48A0001CE119 /* SKNode+Extensions.swift */,
+				847519E124DD48E0001CE119 /* CGPoint+Extensions.swift */,
+				524107292571CB38008A6718 /* Geometry.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -175,6 +186,7 @@
 				847519E024DD48A0001CE119 /* SKNode+Extensions.swift in Sources */,
 				847519E424DD4F31001CE119 /* UpdateIntervalCounter.swift in Sources */,
 				520DDFC824936E2500C4E8D1 /* AppDelegate.swift in Sources */,
+				5241072A2571CB38008A6718 /* Geometry.swift in Sources */,
 				847519E224DD48E0001CE119 /* CGPoint+Extensions.swift in Sources */,
 				523415B024A8CBD800F5203E /* Character.swift in Sources */,
 			);
