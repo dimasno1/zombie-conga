@@ -11,6 +11,7 @@ import GameplayKit
 
 final class GameScene: SKScene {
     let playableRect: CGRect
+    let zombieRotateRadiansPerSec: CGFloat = .pi * 4
     let zombieMovePointsPerSec: CGFloat = 480.0
     
     override init(size: CGSize) {
@@ -44,13 +45,25 @@ final class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        defer { keepInBounds(zombie: zombie) }
         intervalCounter.update(with: currentTime)
+        
+        let distance = lastTouchLocation?.distance(to: zombie.position) ?? 0.0
+        let currentFrameDistance = zombieMovePointsPerSec * intervalCounter.secSinceLastUpdate
+        
+        if distance <= currentFrameDistance {
+            zombie.position = lastTouchLocation ?? zombie.position
+            velocity = .zero
+            
+            return
+        }
+        
+        rotateSprite(zombie, to: velocity, radiansPerSec: zombieRotateRadiansPerSec)
         move(sprite: zombie, velocity: velocity)
-        keepInBounds(zombie: zombie)
-        rotateSprite(zombie, to: velocity)
     }
     
     func sceneTouched(at location: CGPoint) {
+        lastTouchLocation = location
         moveZombieToward(vector: location)
     }
     
@@ -95,9 +108,14 @@ final class GameScene: SKScene {
         }
     }
     
-    private func rotateSprite(_ sprite: SKNode, to vector: Vector) {
-        sprite.zRotation = vector.angle
+    private func rotateSprite(_ sprite: SKNode, to vector: Vector, radiansPerSec: CGFloat) {
+        let shortest = CGFloat.shortestAngleBetween(sprite.zRotation, vector.angle)
+        let amountToRotate = min(radiansPerSec * intervalCounter.secSinceLastUpdate, abs(shortest))
+        
+        sprite.zRotation += shortest.sign * amountToRotate
     }
+    
+    private var lastTouchLocation: CGPoint?
     
     private var velocity = CGPoint.zero
     private let intervalCounter = UpdateIntervalCounter()

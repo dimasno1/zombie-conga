@@ -32,3 +32,21 @@ extension Vector {
     }
 }
 
+extension CGFloat {
+    static func shortestAngleBetween(_ a1: CGFloat, _ a2: CGFloat) -> CGFloat {
+        let doublePi: CGFloat = .pi * 2
+        var angle = (a2 - a1).truncatingRemainder(dividingBy: doublePi)
+        
+        if angle >= .pi {
+            angle -= doublePi
+        }
+        if angle <= -.pi {
+            angle += doublePi
+        }
+        return angle
+    }
+    
+    var sign: CGFloat {
+        return self >= 0 ? 1 : -1
+    }
+}
