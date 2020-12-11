@@ -43,7 +43,7 @@ final class GameScene: SKScene {
         background.place(in: self, at: .zero)
         zombie.place(in: self, at: CGPoint(x: 400, y: 400))
         
-        spawnEnemy()
+        respawnEnemy()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -81,7 +81,7 @@ final class GameScene: SKScene {
         velocity = direction * zombieMovePointsPerSec
     }
     
-    func spawnEnemy() {
+    func respawnEnemy() {
         let enemy = Character.enemy.node
         enemy.place(in: self, at: .init(x: size.width + enemy.size.width / 2, y: size.height / 2))
         moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y))
