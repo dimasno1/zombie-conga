@@ -43,7 +43,7 @@ final class GameScene: SKScene {
         background.place(in: self, at: .zero)
         zombie.place(in: self, at: CGPoint(x: 400, y: 400))
         
-        respawnEnemy()
+        spawnEnemy()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -81,14 +81,29 @@ final class GameScene: SKScene {
         velocity = direction * zombieMovePointsPerSec
     }
     
-    func respawnEnemy() {
+    func spawnEnemy() {
         let enemy = Character.enemy.node
         enemy.place(in: self, at: .init(x: size.width + enemy.size.width / 2, y: size.height / 2))
-        moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y))
+        let controlPoints = [
+            CGPoint(x: -size.width / 2 - enemy.size.width / 2, y: -playableRect.height / 2 + enemy.size.height / 2),
+            CGPoint(x: -size.width / 2 - enemy.size.width / 2, y: playableRect.height / 2 - enemy.size.height / 2)
+        ]
+        moveNode(enemy, throughTargets: controlPoints, delayAtControlPoints: 0.35, duration: 4.0)
     }
     
     func moveNode(_ node: SKNode, to target: CGPoint) {
         node.run(.move(to: target, duration: 2.0))
+    }
+    
+    func moveNode(_ node: SKNode, throughTargets targest: [CGPoint], delayAtControlPoints: TimeInterval, duration: TimeInterval) {
+        let actions = targest.map { SKAction.moveBy(x: $0.x, y: $0.y, duration: duration / Double(targest.count)) }
+        let revActions = actions.reversed().map { $0.reversed() }
+
+        let wait = SKAction.wait(forDuration: delayAtControlPoints)
+        let withPauses =  Array((actions + revActions).map { [$0] }.joined(separator: [wait]))
+
+        let sequence = SKAction.sequence(withPauses)
+        node.run(sequence)
     }
     
     @objc
