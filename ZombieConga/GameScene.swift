@@ -93,11 +93,15 @@ final class GameScene: SKScene {
             y: .random(in: playableRect.minY + enemy.size.height / 2 ... playableRect.maxY - enemy.size.height / 2)
         )
         enemy.place(in: self, at: respawnPosition)
-        moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y))
+        moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y), removeAfterReachingTarget: true)
     }
     
-    func moveNode(_ node: SKNode, to target: CGPoint) {
-        node.run(.move(to: target, duration: 5.0))
+    func moveNode(_ node: SKNode, to target: CGPoint, removeAfterReachingTarget remove: Bool) {
+        let actions: [SKAction?] = [
+            .move(to: target, duration: 5.0),
+            remove ? .removeFromParent() : nil
+        ]
+        node.run(.sequence(actions.compactMap { $0 }))
     }
     
     func moveNode(_ node: SKNode, throughTargets targest: [CGPoint], delayAtControlPoints: TimeInterval, duration: TimeInterval) {
