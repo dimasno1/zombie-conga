@@ -43,7 +43,12 @@ final class GameScene: SKScene {
         background.place(in: self, at: .zero)
         zombie.place(in: self, at: CGPoint(x: 400, y: 400))
         
-        spawnEnemy()
+        let spawnEnemy = SKAction.run { [weak self] in
+            self?.spawnEnemy()
+        }
+        let spawnAndWait = SKAction.sequence([spawnEnemy, .wait(forDuration: 5.0)])
+        
+        run(.repeatForever(spawnAndWait))
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -83,16 +88,16 @@ final class GameScene: SKScene {
     
     func spawnEnemy() {
         let enemy = Character.enemy.node
-        enemy.place(in: self, at: .init(x: size.width + enemy.size.width / 2, y: size.height / 2))
-        let controlPoints = [
-            CGPoint(x: -size.width / 2 - enemy.size.width / 2, y: -playableRect.height / 2 + enemy.size.height / 2),
-            CGPoint(x: -size.width / 2 - enemy.size.width / 2, y: playableRect.height / 2 - enemy.size.height / 2)
-        ]
-        moveNode(enemy, throughTargets: controlPoints, delayAtControlPoints: 0.35, duration: 4.0)
+        let respawnPosition = CGPoint(
+            x: size.width + enemy.size.width / 2,
+            y: .random(in: playableRect.minY + enemy.size.height / 2 ... playableRect.maxY - enemy.size.height / 2)
+        )
+        enemy.place(in: self, at: respawnPosition)
+        moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y))
     }
     
     func moveNode(_ node: SKNode, to target: CGPoint) {
-        node.run(.move(to: target, duration: 2.0))
+        node.run(.move(to: target, duration: 5.0))
     }
     
     func moveNode(_ node: SKNode, throughTargets targest: [CGPoint], delayAtControlPoints: TimeInterval, duration: TimeInterval) {
@@ -103,7 +108,9 @@ final class GameScene: SKScene {
         let withPauses =  Array((actions + revActions).map { [$0] }.joined(separator: [wait]))
 
         let sequence = SKAction.sequence(withPauses)
-        node.run(sequence)
+        
+        let repeatAction = SKAction.repeatForever(sequence)
+        node.run(repeatAction)
     }
     
     @objc
