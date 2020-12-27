@@ -108,10 +108,16 @@ final class GameScene: SKScene {
         )
         cat.setScale(0)
         cat.place(in: self, at: respawnPosition)
+        
+        cat.zRotation = -.pi / 16.0
+        
+        let leftWiggle = SKAction.rotate(byAngle: .pi / 8.0, duration: 0.5)
+        let rightWiggle = leftWiggle.reversed()
+        let wiggle = SKAction.sequence([leftWiggle, rightWiggle])
 
         let sequence = SKAction.sequence([
             .scale(to: 1.0, duration: 0.5),
-            .wait(forDuration: 10.0),
+            .repeat(wiggle, count: 10),
             .scale(to: 0.0, duration: 0.5),
             .removeFromParent()
         ])
