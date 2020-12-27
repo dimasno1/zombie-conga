@@ -47,8 +47,10 @@ final class GameScene: SKScene {
             self?.spawnEnemy()
         }
         let spawnAndWait = SKAction.sequence([spawnEnemy, .wait(forDuration: 5.0)])
+        let spawnCatAndWait = SKAction.sequence([.run { [weak self] in self?.spawnCat() }, .wait(forDuration: 1.0)])
         
         run(.repeatForever(spawnAndWait))
+        run(.repeatForever(spawnCatAndWait))
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -96,6 +98,24 @@ final class GameScene: SKScene {
         )
         enemy.place(in: self, at: respawnPosition)
         moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y), removeAfterReachingTarget: true)
+    }
+    
+    func spawnCat() {
+        let cat = Character.cat.node
+        let respawnPosition = CGPoint(
+            x: .random(in: playableRect.minX ... playableRect.maxX),
+            y: .random(in: playableRect.minY ... playableRect.maxY)
+        )
+        cat.setScale(0)
+        cat.place(in: self, at: respawnPosition)
+
+        let sequence = SKAction.sequence([
+            .scale(to: 1.0, duration: 0.5),
+            .wait(forDuration: 10.0),
+            .scale(to: 0.0, duration: 0.5),
+            .removeFromParent()
+        ])
+        cat.run(sequence)
     }
     
     func moveNode(_ node: SKNode, to target: CGPoint, removeAfterReachingTarget remove: Bool) {
