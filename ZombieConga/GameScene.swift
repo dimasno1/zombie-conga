@@ -61,6 +61,7 @@ final class GameScene: SKScene {
         if distance <= currentFrameDistance {
             zombie.position = lastTouchLocation ?? zombie.position
             velocity = .zero
+            setZombieWalk(animated: false)
             
             return
         }
@@ -80,6 +81,7 @@ final class GameScene: SKScene {
     }
     
     func moveZombieToward(vector: Vector) {
+        setZombieWalk(animated: true)
         let distance = vector - zombie.position
         let direction = distance.normalized
             
@@ -153,11 +155,33 @@ final class GameScene: SKScene {
         sprite.zRotation += shortest.sign * amountToRotate
     }
     
+    private func setZombieWalk(animated: Bool) {
+        guard animated else {
+            zombie.removeAction(forKey: AnimationKey.walkAnimation)
+            return
+        }
+        
+        if zombie.isActiveAnimation(for: AnimationKey.walkAnimation) {
+            return
+        }
+        
+        zombie.run(
+            .repeatForever(Character.zombie.walkAnimation),
+            withKey: AnimationKey.walkAnimation
+        )
+    }
+    
     private var lastTouchLocation: CGPoint?
     
     private var velocity = CGPoint.zero
     private let intervalCounter = UpdateIntervalCounter()
-    private let zombie = Character.zombie(index: 1).node
+    private let zombie = Character.zombie.node
+}
+
+extension SKNode {
+    func isActiveAnimation(for key: String) -> Bool {
+        return self.action(forKey: key) != nil
+    }
 }
 
 private extension CGFloat {
@@ -170,4 +194,8 @@ private extension UIScreen {
     var landscapeAspectRation: CGFloat {
         return bounds.width / bounds.height
     }
+}
+
+private enum AnimationKey {
+    static let walkAnimation = "walk_animation"
 }
