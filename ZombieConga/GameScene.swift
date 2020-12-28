@@ -42,6 +42,15 @@ final class GameScene: SKScene {
     
         background.place(in: self, at: .zero)
         zombie.place(in: self, at: CGPoint(x: 400, y: 400))
+        
+        let spawnEnemy = SKAction.run { [weak self] in
+            self?.spawnEnemy()
+        }
+        let spawnAndWait = SKAction.sequence([spawnEnemy, .wait(forDuration: 5.0)])
+        let spawnCatAndWait = SKAction.sequence([.run { [weak self] in self?.spawnCat() }, .wait(forDuration: 1.0)])
+        
+        run(.repeatForever(spawnAndWait))
+        run(.repeatForever(spawnCatAndWait))
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -54,6 +63,7 @@ final class GameScene: SKScene {
         if distance <= currentFrameDistance {
             zombie.position = lastTouchLocation ?? zombie.position
             velocity = .zero
+            setZombieWalk(animated: false)
             
             return
         }
@@ -73,10 +83,70 @@ final class GameScene: SKScene {
     }
     
     func moveZombieToward(vector: Vector) {
+        setZombieWalk(animated: true)
         let distance = vector - zombie.position
         let direction = distance.normalized
             
         velocity = direction * zombieMovePointsPerSec
+    }
+    
+    func spawnEnemy() {
+        let enemy = Character.enemy.node
+        let respawnPosition = CGPoint(
+            x: size.width + enemy.size.width / 2,
+            y: .random(in: playableRect.minY + enemy.size.height / 2 ... playableRect.maxY - enemy.size.height / 2)
+        )
+        enemy.place(in: self, at: respawnPosition)
+        moveNode(enemy, to: .init(x: -enemy.size.width / 2, y: enemy.position.y), removeAfterReachingTarget: true)
+    }
+    
+    func spawnCat() {
+        let cat = Character.cat.node
+        let respawnPosition = CGPoint(
+            x: .random(in: playableRect.minX ... playableRect.maxX),
+            y: .random(in: playableRect.minY ... playableRect.maxY)
+        )
+        cat.setScale(0)
+        cat.place(in: self, at: respawnPosition)
+        cat.zRotation = -.pi / 16.0
+        
+        let scaleUp = SKAction.scale(by: 1.2, duration: 0.25)
+        let scaleDown = scaleUp.reversed()
+        let scale  = SKAction.sequence([scaleUp, scaleDown, scaleUp, scaleDown])
+        
+        let leftWiggle = SKAction.rotate(byAngle: .pi / 8.0, duration: 0.5)
+        let rightWiggle = leftWiggle.reversed()
+        let wiggle = SKAction.sequence([leftWiggle, rightWiggle])
+        let group = SKAction.group([scale, wiggle])
+
+        let sequence = SKAction.sequence([
+            .scale(to: 1.0, duration: 0.5),
+            .repeat(group, count: 10),
+            .scale(to: 0.0, duration: 0.5),
+            .removeFromParent()
+        ])
+        cat.run(sequence)
+    }
+    
+    func moveNode(_ node: SKNode, to target: CGPoint, removeAfterReachingTarget remove: Bool) {
+        let actions: [SKAction?] = [
+            .move(to: target, duration: 5.0),
+            remove ? .removeFromParent() : nil
+        ]
+        node.run(.sequence(actions.compactMap { $0 }))
+    }
+    
+    func moveNode(_ node: SKNode, throughTargets targest: [CGPoint], delayAtControlPoints: TimeInterval, duration: TimeInterval) {
+        let actions = targest.map { SKAction.moveBy(x: $0.x, y: $0.y, duration: duration / Double(targest.count)) }
+        let revActions = actions.reversed().map { $0.reversed() }
+
+        let wait = SKAction.wait(forDuration: delayAtControlPoints)
+        let withPauses =  Array((actions + revActions).map { [$0] }.joined(separator: [wait]))
+
+        let sequence = SKAction.sequence(withPauses)
+        
+        let repeatAction = SKAction.repeatForever(sequence)
+        node.run(repeatAction)
     }
     
     @objc
@@ -115,11 +185,33 @@ final class GameScene: SKScene {
         sprite.zRotation += shortest.sign * amountToRotate
     }
     
+    private func setZombieWalk(animated: Bool) {
+        guard animated else {
+            zombie.removeAction(forKey: AnimationKey.walkAnimation)
+            return
+        }
+        
+        if zombie.isActiveAnimation(for: AnimationKey.walkAnimation) {
+            return
+        }
+        
+        zombie.run(
+            .repeatForever(Character.zombie.walkAnimation),
+            withKey: AnimationKey.walkAnimation
+        )
+    }
+    
     private var lastTouchLocation: CGPoint?
     
     private var velocity = CGPoint.zero
     private let intervalCounter = UpdateIntervalCounter()
-    private let zombie = Character.zombie(index: 1).node
+    private let zombie = Character.zombie.node
+}
+
+extension SKNode {
+    func isActiveAnimation(for key: String) -> Bool {
+        return self.action(forKey: key) != nil
+    }
 }
 
 private extension CGFloat {
@@ -132,4 +224,8 @@ private extension UIScreen {
     var landscapeAspectRation: CGFloat {
         return bounds.width / bounds.height
     }
+}
+
+private enum AnimationKey {
+    static let walkAnimation = "walk_animation"
 }
