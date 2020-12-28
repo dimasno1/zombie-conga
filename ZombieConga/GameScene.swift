@@ -70,6 +70,7 @@ final class GameScene: SKScene {
         
         rotateSprite(zombie, to: velocity, radiansPerSec: zombieRotateRadiansPerSec)
         move(sprite: zombie, velocity: velocity)
+        checkZombieCollisions()
     }
     
     func sceneTouched(at location: CGPoint) {
@@ -92,6 +93,7 @@ final class GameScene: SKScene {
     
     func spawnEnemy() {
         let enemy = Character.enemy.node
+        enemy.name = Character.enemy.name
         let respawnPosition = CGPoint(
             x: size.width + enemy.size.width / 2,
             y: .random(in: playableRect.minY + enemy.size.height / 2 ... playableRect.maxY - enemy.size.height / 2)
@@ -102,6 +104,7 @@ final class GameScene: SKScene {
     
     func spawnCat() {
         let cat = Character.cat.node
+        cat.name = Character.cat.name
         let respawnPosition = CGPoint(
             x: .random(in: playableRect.minX ... playableRect.maxX),
             y: .random(in: playableRect.minY ... playableRect.maxY)
@@ -126,6 +129,19 @@ final class GameScene: SKScene {
             .removeFromParent()
         ])
         cat.run(sequence)
+    }
+    
+    func checkZombieCollisions() {
+        for enemy in hitEnemies {
+            zombieHit(characterNode: enemy)
+        }
+        for cat in hitCats {
+            zombieHit(characterNode: cat)
+        }
+    }
+
+    func zombieHit(characterNode: SKSpriteNode) {
+        characterNode.removeFromParent()
     }
     
     func moveNode(_ node: SKNode, to target: CGPoint, removeAfterReachingTarget remove: Bool) {
@@ -200,7 +216,31 @@ final class GameScene: SKScene {
             withKey: AnimationKey.walkAnimation
         )
     }
+
+    private func zombieCollisionsWithNodes(named: String, insets: UIEdgeInsets = .zero) -> [SKSpriteNode] {
+        var nodes: [SKSpriteNode] = []
+        enumerateChildNodes(withName: named) { [weak self] node, _ in
+            guard let self = self, let node = node as? SKSpriteNode else {
+                return
+            }
+            if node.frame.inset(by: insets).intersects(self.zombie.frame) {
+                nodes.append(node)
+            }
+        }
+        return nodes
+    }
+        
+    private var hitCats: [SKSpriteNode] {
+        return zombieCollisionsWithNodes(named: Character.cat.name)
+    }
     
+    private var hitEnemies: [SKSpriteNode] {
+        return zombieCollisionsWithNodes(
+            named: Character.enemy.name,
+            insets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        )
+    }
+
     private var lastTouchLocation: CGPoint?
     
     private var velocity = CGPoint.zero
