@@ -131,9 +131,11 @@ final class GameScene: SKScene {
     func checkZombieCollisions() {
         for enemy in hitEnemies {
             zombieHit(characterNode: enemy)
+            run(.playSoundFileNamed("hitCatLady.wav", waitForCompletion: false))
         }
         for cat in hitCats {
             zombieHit(characterNode: cat)
+            run(.playSoundFileNamed("hitCat.wav", waitForCompletion: false))
         }
     }
 
@@ -210,7 +212,7 @@ final class GameScene: SKScene {
             velocity.y.changeSign()
         }
     }
-    
+
     private func rotateSprite(_ sprite: SKNode, to vector: Vector, radiansPerSec: CGFloat) {
         let shortest = CGFloat.shortestAngleBetween(sprite.zRotation, vector.angle)
         let amountToRotate = min(radiansPerSec * intervalCounter.secSinceLastUpdate, abs(shortest))
@@ -263,12 +265,6 @@ final class GameScene: SKScene {
     private var velocity = CGPoint.zero
     private let intervalCounter = UpdateIntervalCounter()
     private let zombie = Character.zombie.node
-}
-
-extension SKNode {
-    func isActiveAnimation(for key: String) -> Bool {
-        return self.action(forKey: key) != nil
-    }
 }
 
 private extension CGFloat {
