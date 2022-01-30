@@ -83,7 +83,7 @@
 			children = (
 				520DDFC724936E2500C4E8D1 /* AppDelegate.swift */,
 				520DDFCD24936E2500C4E8D1 /* GameScene.swift */,
-				847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */,
+				521219AC27A6D7370028CE85 /* Services */,
 				520DDFCF24936E2500C4E8D1 /* GameViewController.swift */,
 				5241072C2571CB48008A6718 /* Extensions */,
 				523415B124A8CBF000F5203E /* Models */,
@@ -91,6 +91,14 @@
 				5206267024A8937800A358C0 /* SupportingFiles */,
 			);
 			path = ZombieConga;
+			sourceTree = "<group>";
+		};
+		521219AC27A6D7370028CE85 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				847519E324DD4F31001CE119 /* UpdateIntervalCounter.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		523415B124A8CBF000F5203E /* Models */ = {
