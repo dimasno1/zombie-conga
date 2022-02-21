@@ -9,6 +9,11 @@
 import SpriteKit
 import GameplayKit
 
+extension SKAction {
+    static let playHitCatLady: SKAction = .playSoundFileNamed("hitCatLady.wav", waitForCompletion: false)
+    static let playHitCat: SKAction = .playSoundFileNamed("hitCat.wav", waitForCompletion: false)
+}
+
 final class GameScene: SKScene {
     let playableRect: CGRect
     let zombieRotateRadiansPerSec: CGFloat = .pi * 4
@@ -65,6 +70,7 @@ final class GameScene: SKScene {
         
         rotateSprite(zombie, to: velocity, radiansPerSec: zombieRotateRadiansPerSec)
         move(sprite: zombie, velocity: velocity)
+        moveTrain()
     }
     
     // Called after update(_ :) method
@@ -89,6 +95,29 @@ final class GameScene: SKScene {
             
         velocity = direction * zombieMovePointsPerSec
     }
+    
+    private func moveTrain() {
+        var targetPosition = zombie.position
+        
+        enumerateChildNodes(withName: "zombie_cat") { zombieCat, _ in
+            if !zombieCat.hasActions() {
+                let duration: TimeInterval = 0.3
+                let offset = targetPosition - zombieCat.position
+                let direction = offset.normalized
+                let amountToMovePerSec = direction * 480.0
+                let amountToMove = amountToMovePerSec * CGFloat(duration)
+                
+                let moveAction = SKAction.moveBy(x: amountToMove.x, y:  amountToMove.y, duration: duration)
+             
+                let angle = CGFloat.shortestAngleBetween(zombieCat.zRotation, direction.angle)
+                let rotate = SKAction.rotate(byAngle: angle, duration: duration)
+                let group = SKAction.group([moveAction, rotate])
+                zombieCat.run(group)
+            }
+            targetPosition = zombieCat.position
+        }
+    }
+    
     
     func spawnEnemy() {
         let enemy = Character.enemy.node
@@ -136,20 +165,29 @@ final class GameScene: SKScene {
         }
 
         if !hitEnemies.isEmpty {
-            makeZombieInvincible(for: 5.0, blinkTimes: 8)
-            run(.playSoundFileNamed("hitCatLady.wav", waitForCompletion: false))
+            makeZombieInvincible(for: 3.0, blinkTimes: 10)
+            run(.playHitCatLady)
         }
         for cat in hitCats {
-            zombieHit(characterNode: cat)
-            run(.playSoundFileNamed("hitCat.wav", waitForCompletion: false))
+            zombieHitCat(cat)
+            run(.playHitCat)
+            zombie.zPosition = 100
         }
     }
 
-    func zombieHit(characterNode: SKSpriteNode) {
+    func zombieHitCat(_ cat: SKSpriteNode) {
         if isZombieInvincible {
             return
         }
-        characterNode.removeFromParent()
+        cat.name = "zombie_cat"
+        cat.removeAllActions()
+
+        let actions: [SKAction] = [
+            .scale(to: 1.0, duration: 0.2),
+            .rotate(toAngle: 0, duration: 0.2),
+            .colorize(with: .green, colorBlendFactor: 1.0, duration: 0.2)
+        ]
+        cat.run(.group(actions))
     }
     
     func moveNode(_ node: SKNode, to target: CGPoint, removeAfterReachingTarget remove: Bool) {
@@ -255,6 +293,7 @@ final class GameScene: SKScene {
             zombie.isHidden = remainder > slice / 2
         }
         let setVincible = SKAction.run {
+            self.zombie.isHidden = false
             self.isZombieInvincible = false
         }
         let blinkTillVincible = SKAction.sequence([blink, setVincible])
