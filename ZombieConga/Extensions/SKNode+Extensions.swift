@@ -9,9 +9,13 @@
 import SpriteKit
 
 extension SKNode {
-    func place(in node: SKNode, at position: CGPoint) {
+    func place(in parent: SKNode, at position: CGPoint) {
         self.position = position
-        node.addChild(self)
+        parent.addChild(self)
+    }
+
+    func isActiveAnimation(for key: String) -> Bool {
+        return self.action(forKey: key) != nil
     }
 }
 

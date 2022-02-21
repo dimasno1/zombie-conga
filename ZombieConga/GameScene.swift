@@ -13,6 +13,8 @@ final class GameScene: SKScene {
     let playableRect: CGRect
     let zombieRotateRadiansPerSec: CGFloat = .pi * 4
     let zombieMovePointsPerSec: CGFloat = 480.0
+
+    private var isZombieInvincible: Bool = false
     
     override init(size: CGSize) {
         let playableHeight = size.width / UIScreen.main.landscapeAspectRation
@@ -129,15 +131,24 @@ final class GameScene: SKScene {
     }
     
     func checkZombieCollisions() {
-        for enemy in hitEnemies {
-            zombieHit(characterNode: enemy)
+        if isZombieInvincible {
+            return
+        }
+
+        if !hitEnemies.isEmpty {
+            makeZombieInvincible(for: 5.0, blinkTimes: 8)
+            run(.playSoundFileNamed("hitCatLady.wav", waitForCompletion: false))
         }
         for cat in hitCats {
             zombieHit(characterNode: cat)
+            run(.playSoundFileNamed("hitCat.wav", waitForCompletion: false))
         }
     }
 
     func zombieHit(characterNode: SKSpriteNode) {
+        if isZombieInvincible {
+            return
+        }
         characterNode.removeFromParent()
     }
     
@@ -210,7 +221,7 @@ final class GameScene: SKScene {
             velocity.y.changeSign()
         }
     }
-    
+
     private func rotateSprite(_ sprite: SKNode, to vector: Vector, radiansPerSec: CGFloat) {
         let shortest = CGFloat.shortestAngleBetween(sprite.zRotation, vector.angle)
         let amountToRotate = min(radiansPerSec * intervalCounter.secSinceLastUpdate, abs(shortest))
@@ -232,6 +243,22 @@ final class GameScene: SKScene {
             .repeatForever(Character.zombie.walkAnimation),
             withKey: AnimationKey.zombieWalk
         )
+    }
+
+    private func makeZombieInvincible(for duration: TimeInterval, blinkTimes: Int) {
+        isZombieInvincible = true
+
+        let blink = SKAction.customAction(withDuration: duration) { zombie, elapsedTime in
+            let slice = duration / Double(blinkTimes)
+            let remainder = Double(elapsedTime).truncatingRemainder(dividingBy: slice)
+
+            zombie.isHidden = remainder > slice / 2
+        }
+        let setVincible = SKAction.run {
+            self.isZombieInvincible = false
+        }
+        let blinkTillVincible = SKAction.sequence([blink, setVincible])
+        zombie.run(blinkTillVincible)
     }
 
     private func zombieCollisionsWithNodes(named: String, insets: UIEdgeInsets = .zero) -> [SKSpriteNode] {
@@ -263,18 +290,6 @@ final class GameScene: SKScene {
     private var velocity = CGPoint.zero
     private let intervalCounter = UpdateIntervalCounter()
     private let zombie = Character.zombie.node
-}
-
-extension SKNode {
-    func isActiveAnimation(for key: String) -> Bool {
-        return self.action(forKey: key) != nil
-    }
-}
-
-private extension CGFloat {
-    mutating func changeSign() {
-        self = -self
-    }
 }
 
 private extension UIScreen {
