@@ -6,9 +6,9 @@
 //  Copyright © 2022 Dimasno1. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-private extension CGFloat {
+extension CGFloat {
     mutating func changeSign() {
         self *= -1
     }
