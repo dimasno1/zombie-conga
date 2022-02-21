@@ -104,14 +104,15 @@ final class GameScene: SKScene {
                 let duration: TimeInterval = 0.3
                 let offset = targetPosition - zombieCat.position
                 let direction = offset.normalized
+                
                 let amountToMovePerSec = direction * 480.0
                 let amountToMove = amountToMovePerSec * CGFloat(duration)
+                let angle = CGFloat.shortestAngleBetween(zombieCat.zRotation, direction.angle)
                 
                 let moveAction = SKAction.moveBy(x: amountToMove.x, y:  amountToMove.y, duration: duration)
-             
-                let angle = CGFloat.shortestAngleBetween(zombieCat.zRotation, direction.angle)
-                let rotate = SKAction.rotate(byAngle: angle, duration: duration)
-                let group = SKAction.group([moveAction, rotate])
+                let rotateAction = SKAction.rotate(byAngle: angle, duration: duration)
+                let group = SKAction.group([moveAction, rotateAction])
+
                 zombieCat.run(group)
             }
             targetPosition = zombieCat.position
